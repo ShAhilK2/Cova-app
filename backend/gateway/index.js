@@ -6,6 +6,7 @@ import morgan from "morgan";
 import proxy from "express-http-proxy";
 import { protect } from "./middleware/protect.js";
 import { getCurrentUser } from "./controller/user.controller.js";
+import { proxyWithHeaders } from "./utils/proxyWithHeaders.js";
 
 dotenv.config();
 
@@ -22,7 +23,8 @@ app.use(express.json());
 
 
 // Proxy routes
-app.use("/api/auth", proxy("http://localhost:8001"));
+app.use("/api/auth", proxy(process.env.AUTH_SERVICE_URL));
+app.use("/api/project",protect, proxyWithHeaders(process.env.PROJECT_SERVICE_URL));
 app.get("/api/me",protect, getCurrentUser);
 
 
