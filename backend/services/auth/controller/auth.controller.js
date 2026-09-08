@@ -12,6 +12,7 @@ export const login = async (req, res) => {
         const decoded = await getAuth(firebaseAdmin).verifyIdToken(token);
 
 
+        console.log("decoded", decoded);
         let user = await User.findOne({ firebaseUid: decoded.uid });
 
         if(!user) {
@@ -19,7 +20,7 @@ export const login = async (req, res) => {
                 firebaseUid: decoded.uid,
                 email: decoded.email,
                 name: decoded.name,
-                picture: decoded.picture
+                avatar: decoded.picture
             });
         }
 
@@ -27,7 +28,7 @@ export const login = async (req, res) => {
         const sessionId = crypto.randomUUID();
 
         await redis.set(`session:${sessionId}`,JSON.stringify(
-            {userId: user._id,
+            {   _id: user._id,
                 name: user.name,
                 email: user.email,
                 avatar: user.avatar
@@ -42,7 +43,7 @@ export const login = async (req, res) => {
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
-        return res.status(200).json(user);
+        return res.status(200).json({user,decoded});
     } catch (error) {
         console.error("Error verifying token:", error);
         return res.status(401).json({ message: "Invalid token" });

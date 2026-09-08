@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import proxy from "express-http-proxy";
+import { protect } from "./middleware/protect.js";
+import { getCurrentUser } from "./controller/user.controller.js";
 
 dotenv.config();
 
@@ -21,6 +23,7 @@ app.use(express.json());
 
 // Proxy routes
 app.use("/api/auth", proxy("http://localhost:8001"));
+app.get("/api/me",protect, getCurrentUser);
 
 
 app.get("/", (req, res) => {
