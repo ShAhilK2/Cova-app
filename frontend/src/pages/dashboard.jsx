@@ -4,9 +4,12 @@ import { FcGoogle } from "react-icons/fc";
 import { auth, googleProvider } from "../config/firebase";
 import { login } from "../features/login";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const handleLogIn = async () => {
     setLoading(true);
     const data = await signInWithPopup(auth, googleProvider);
@@ -17,6 +20,7 @@ const Dashboard = () => {
     console.log("token from frontend", token);
     const loginData = await login({ token });
     console.log("loginData", loginData);
+    dispatch(setUserData(loginData));
 
     setLoading(false);
   };
