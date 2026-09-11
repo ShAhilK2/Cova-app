@@ -1,3 +1,4 @@
+import proxy from "express-http-proxy";
 
 
 export const proxyWithHeaders = (serviceUrl) => {

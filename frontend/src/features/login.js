@@ -12,3 +12,14 @@ export const login = async ({token}) => {
     }
   
 };
+
+export const logOut = async () => {
+    try {
+        const {data} = await api.get('/api/auth/logout');
+        return data;
+    } catch (error) {
+       console.error("Axios error:", error);
+       return null;
+    }
+  
+};

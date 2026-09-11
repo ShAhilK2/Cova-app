@@ -12,7 +12,7 @@ export const login = async (req, res) => {
         const decoded = await getAuth(firebaseAdmin).verifyIdToken(token);
 
 
-        console.log("decoded", decoded);
+   
         let user = await User.findOne({ firebaseUid: decoded.uid });
 
         if(!user) {
@@ -43,7 +43,7 @@ export const login = async (req, res) => {
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
-        return res.status(200).json({user,decoded});
+        return res.status(200).json({user});
     } catch (error) {
         console.error("Error verifying token:", error);
         return res.status(401).json({ message: "Invalid token" });
@@ -53,14 +53,14 @@ export const login = async (req, res) => {
 
 export const logOut = async (req, res) => {
     try {
-        const {sessionId} = req?.cookies;
+        const sessionid = req?.cookies?.sessionId;
 
-        await redis.del(`session:${sessionId}`);
+        await redis.del(`session:${sessionid}`);
         res.clearCookie("sessionId");
 
         return res.status(200).json({message: "Logged out"});
     } catch (error) {
         console.error("Error logging out:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" ,error : error.message});
     }
 }

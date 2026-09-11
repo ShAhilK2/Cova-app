@@ -1,5 +1,5 @@
 import { signInWithPopup } from "firebase/auth";
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { auth, googleProvider } from "../config/firebase";
 import { login } from "../features/login";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import ProfileCard from "../components/profile.jsx";
+import Navbar from "../components/Navbar.jsx";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -23,10 +24,17 @@ const Dashboard = () => {
     console.log("token from frontend", token);
     const loginData = await login({ token });
     console.log("loginData", loginData);
-    dispatch(setUserData(loginData));
-
+    dispatch(setUserData(loginData?.user));
     setLoading(false);
   };
+
+  useEffect(() => {
+    // on system theme change
+    const theme = localStorage.getItem("theme");
+    if (theme) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+    }
+  }, []);
 
   if (!userData) {
     return (
@@ -89,8 +97,13 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="flex h-screen w-full items-center justify-center font-black">
-      Dashboard
+    <div className="relative flex h-screen flex-col overflow-hidden bg-slate-50 transition-colors duration-300 dark:bg-[#07070c]">
+      <div className="pointer-events-none absolute -top-40 left-1/3 hidden h-[700px] w-[700px] rounded-full bg-white/[0.04] blur-[140px] dark:block" />
+      <div className="pointer-events-none absolute right-0 top-1/3 hidden h-[700px] w-[700px] rounded-full bg-white/[0.03] blur-[140px] dark:block" />
+
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <Navbar />
+      </div>
     </div>
   );
 };
